@@ -409,7 +409,7 @@ jobs:
       - name: Build Torch=On FAISS=On RMQ=On AMS
         shell: bash -l {0}
         run: |
-          # module load gcc/11.2.1
+          module load gcc/11.2.1
           source /spack/share/spack/setup-env.sh
           spack env activate -p /ams-spack-env
           rm -rf build/
