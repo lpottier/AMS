@@ -491,11 +491,7 @@ jobs:
           #   \"rabbitmq-routing-key\": \"training\"
           # }""" > $GITHUB_WORKSPACE/rmq.json
 
-          echo $GITHUB_WORKSPACE
-          pwd
-          ls -alh -R
           export AMS_LOG_LEVEL=debug
-          $GITHUB_WORKSPACE/tests/AMSlib/ams_rmq = /__w/AMS/AMS/tests/AMSlib/ams_rmq
           AMS_OBJECTS=$GITHUB_WORKSPACE/tests/build/AMSlib/rmq.json $GITHUB_WORKSPACE/build/tests/AMSlib/ams_rmq 0 8 9 "double" 2 1024
 
           #ctest --output-on-failure -R AMSEndToEndFromJSON::NoModel::Double::DB::rmq::HOST
