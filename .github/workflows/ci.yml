@@ -477,22 +477,26 @@ jobs:
             },
             \"ml_models\": {},
             \"domain_models\": {}
-          }""" > $GITHUB_WORKSPACE/tests/AMSlib/rmq.json
+          }""" > $GITHUB_WORKSPACE/build/tests/AMSlib/rmq.json
 
-          echo """{
-            \"rabbitmq-name\": \"rabbit\",
-            \"rabbitmq-user\": \"${RABBITMQ_USER}\",
-            \"rabbitmq-password\": \"${RABBITMQ_PASS}\",
-            \"service-port\": ${RABBITMQ_PORT},
-            \"service-host\": \"${RABBITMQ_HOST}\",
-            \"rabbitmq-vhost\": \"/\",
-            \"rabbitmq-outbound-queue\": \"test-ci\",
-            \"rabbitmq-exchange\": \"ams-fanout\",
-            \"rabbitmq-routing-key\": \"training\"
-          }""" > $GITHUB_WORKSPACE/rmq.json
+          # echo """{
+          #   \"rabbitmq-name\": \"rabbit\",
+          #   \"rabbitmq-user\": \"${RABBITMQ_USER}\",
+          #   \"rabbitmq-password\": \"${RABBITMQ_PASS}\",
+          #   \"service-port\": ${RABBITMQ_PORT},
+          #   \"service-host\": \"${RABBITMQ_HOST}\",
+          #   \"rabbitmq-vhost\": \"/\",
+          #   \"rabbitmq-outbound-queue\": \"test-ci\",
+          #   \"rabbitmq-exchange\": \"ams-fanout\",
+          #   \"rabbitmq-routing-key\": \"training\"
+          # }""" > $GITHUB_WORKSPACE/rmq.json
 
+          echo $GITHUB_WORKSPACE
+          pwd
+          ls -alh -R
           export AMS_LOG_LEVEL=debug
-          AMS_OBJECTS=$GITHUB_WORKSPACE/tests/AMSlib/rmq.json $GITHUB_WORKSPACE/tests/AMSlib/ams_rmq 0 8 9 "double" 2 1024
+          $GITHUB_WORKSPACE/tests/AMSlib/ams_rmq = /__w/AMS/AMS/tests/AMSlib/ams_rmq
+          AMS_OBJECTS=$GITHUB_WORKSPACE/tests/build/AMSlib/rmq.json $GITHUB_WORKSPACE/build/tests/AMSlib/ams_rmq 0 8 9 "double" 2 1024
 
           #ctest --output-on-failure -R AMSEndToEndFromJSON::NoModel::Double::DB::rmq::HOST
         env:
