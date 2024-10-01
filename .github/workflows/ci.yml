@@ -494,7 +494,7 @@ jobs:
           cat $GITHUB_WORKSPACE/build/tests/AMSlib/rmq.json
 
           export AMS_LOG_LEVEL=debug
-          AMS_OBJECTS=$GITHUB_WORKSPACE/tests/build/AMSlib/rmq.json $GITHUB_WORKSPACE/build/tests/AMSlib/ams_rmq 0 8 9 "double" 2 1024
+          AMS_OBJECTS=$GITHUB_WORKSPACE/build/tests/AMSlib/rmq.json $GITHUB_WORKSPACE/build/tests/AMSlib/ams_rmq 0 8 9 "double" 2 1024
 
           #ctest --output-on-failure -R AMSEndToEndFromJSON::NoModel::Double::DB::rmq::HOST
         env:
