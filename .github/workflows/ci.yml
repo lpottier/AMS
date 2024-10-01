@@ -481,13 +481,6 @@ jobs:
 
   tmp-debug:
     runs-on: ubuntu-latest
-    container:
-      image: ubuntu:latest
-      env:
-        RABBITMQ_USER: guest
-        RABBITMQ_PASS: guest
-        RABBITMQ_HOST: 127.0.0.1
-        RABBITMQ_PORT: ${{ job.services.rabbitmq.ports['5672'] }}
 
     services:
       rabbitmq:
@@ -498,7 +491,21 @@ jobs:
         ports:
           - 5672
 
+    container:
+      image: python:3.11
+      env:
+        RABBITMQ_USER: guest
+        RABBITMQ_PASS: guest
+        RABBITMQ_HOST: 127.0.0.1
+        RABBITMQ_PORT: ${{ job.services.rabbitmq.ports['5672'] }}
+
     steps:
       - uses: actions/checkout@v3
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
+        env:
+          RABBITMQ_USER: guest
+          RABBITMQ_PASS: guest
+          RABBITMQ_HOST: 127.0.0.1
+          RABBITMQ_PORT: ${{ job.services.rabbitmq.ports['5672'] }}
+  
