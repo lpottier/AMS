@@ -402,13 +402,7 @@ jobs:
         ports:
           - 5672
 
-    container:
-      image: ghcr.io/llnl/ams-ci-almalinux8:latest
-      env:
-        RABBITMQ_USER: guest
-        RABBITMQ_PASS: guest
-        RABBITMQ_HOST: rabbitmq
-        RABBITMQ_PORT: 5672
+    container: ghcr.io/llnl/ams-ci-almalinux8:latest
 
     steps:
       - uses: actions/checkout@v3
@@ -479,3 +473,8 @@ jobs:
             \"domain_models\": {}
           }""" > $GITHUB_WORKSPACE/tests/AMSlib/rmq.json
           ctest --output-on-failure -R AMSEndToEndFromJSON::NoModel::Double::DB::rmq::HOST
+        env:
+          RABBITMQ_USER: guest
+          RABBITMQ_PASS: guest
+          RABBITMQ_HOST: rabbitmq
+          RABBITMQ_PORT: 5672
