@@ -481,7 +481,13 @@ jobs:
 
   tmp-debug:
     runs-on: ubuntu-latest
-    container: ghcr.io/llnl/ams-ci-almalinux8:latest
+    container:
+      image: ubuntu:latest
+      env:
+        RABBITMQ_USER: guest
+        RABBITMQ_PASS: guest
+        RABBITMQ_HOST: 127.0.0.1
+        RABBITMQ_PORT: ${{ job.services.rabbitmq.ports['5672'] }}
 
     services:
       rabbitmq:
@@ -496,17 +502,3 @@ jobs:
       - uses: actions/checkout@v3
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
-        env:
-          RABBITMQ_USER: guest
-          RABBITMQ_PASS: guest
-          RABBITMQ_HOST: 127.0.0.1
-          RABBITMQ_PORT: ${{ job.services.rabbitmq.ports['5672'] }}
-      - name: Tests
-        run: |
-          source /spack/share/spack/setup-env.sh
-          spack env activate -p /ams-spack-env
-        env:
-          RABBITMQ_USER: guest
-          RABBITMQ_PASS: guest
-          RABBITMQ_HOST: 127.0.0.1
-          RABBITMQ_PORT: ${{ job.services.rabbitmq.ports['5672'] }}
