@@ -490,6 +490,8 @@ jobs:
           #   \"rabbitmq-exchange\": \"ams-fanout\",
           #   \"rabbitmq-routing-key\": \"training\"
           # }""" > $GITHUB_WORKSPACE/rmq.json
+          
+          cat $GITHUB_WORKSPACE/build/tests/AMSlib/rmq.json
 
           export AMS_LOG_LEVEL=debug
           AMS_OBJECTS=$GITHUB_WORKSPACE/tests/build/AMSlib/rmq.json $GITHUB_WORKSPACE/build/tests/AMSlib/ams_rmq 0 8 9 "double" 2 1024
