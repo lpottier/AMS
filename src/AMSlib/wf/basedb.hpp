@@ -1010,7 +1010,7 @@ private:
 class RMQHandler : public AMQP::LibEventHandler
 {
 protected:
-  /** @brief Path to TLS certificate */
+  /** @brief Path to TLS certificate (if empty, no TLS certificate)*/
   std::string _cacert;
   /** @brief MPI rank (0 if no MPI support) */
   uint64_t _rId;
@@ -1035,7 +1035,7 @@ public:
    */
   RMQHandler(uint64_t rId,
              std::shared_ptr<struct event_base> loop,
-             std::string cacert);
+             std::string cacert = "");
 
   ~RMQHandler() = default;
 

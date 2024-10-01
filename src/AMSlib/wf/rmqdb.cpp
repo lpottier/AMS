@@ -261,6 +261,9 @@ bool RMQHandler::connectionValid()
 
 bool RMQHandler::onSecuring(AMQP::TcpConnection* connection, SSL* ssl)
 {
+  // No TLS certificate provided
+  if (_cacert.empty()) return true;
+
   ERR_clear_error();
   unsigned long err;
 #if OPENSSL_VERSION_NUMBER < 0x10100000L

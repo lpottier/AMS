@@ -25,6 +25,7 @@ def verify(
     cert = None
     if "rabbitmq-cert" in rmq_json:
         cert = rmq_json["rabbitmq-cert"]
+        cert = None if cert == "" else cert
 
     dtype = 4
     if data_type == "double":
