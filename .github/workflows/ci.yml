@@ -472,8 +472,6 @@ jobs:
             \"ml_models\": {},
             \"domain_models\": {}
           }""" > $GITHUB_WORKSPACE/tests/AMSlib/rmq.json
-
-          cat $GITHUB_WORKSPACE/tests/AMSlib/rmq.json
           ctest --output-on-failure -R AMSEndToEndFromJSON::NoModel::Double::DB::rmq::HOST
         env:
           RABBITMQ_USER: guest

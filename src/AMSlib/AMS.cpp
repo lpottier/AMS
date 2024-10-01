@@ -5,9 +5,9 @@
  * SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
  */
 
-#include <limits.h>
-
 #include "AMS.h"
+
+#include <limits.h>
 #ifdef __ENABLE_MPI__
 #include <mpi.h>
 #endif

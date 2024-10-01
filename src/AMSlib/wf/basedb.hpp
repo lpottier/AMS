@@ -2076,10 +2076,11 @@ public:
   {
     fs::path Path(rmq_cert);
     std::error_code ec;
-    CFATAL(AMS,
-           !fs::exists(Path, ec),
-           "Certificate file '%s' for RMQ server does not exist",
-           rmq_cert.c_str());
+    CWARNING(AMS,
+             !fs::exists(Path, ec),
+             "Certificate file '%s' for RMQ server does not exist. AMS will "
+             "try to connect without it.",
+             rmq_cert.c_str());
     dbType = AMSDBType::AMS_RMQ;
     updateSurrogate = update_surrogate;
 #ifdef __ENABLE_RMQ__
