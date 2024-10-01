@@ -479,10 +479,24 @@ jobs:
             \"domain_models\": {}
           }""" > $GITHUB_WORKSPACE/tests/AMSlib/rmq.json
 
-          cat $GITHUB_WORKSPACE/tests/AMSlib/rmq.json
-          openssl s_client -connect rabbitmq:5672 -showcerts
+          echo """{
+            \"rabbitmq-name\": \"rabbit\",
+            \"rabbitmq-user\": \"${RABBITMQ_USER}\",
+            \"rabbitmq-password\": \"${RABBITMQ_PASS}\",
+            \"service-port\": ${RABBITMQ_PORT},
+            \"service-host\": \"${RABBITMQ_HOST}\",
+            \"rabbitmq-vhost\": \"/\",
+            \"rabbitmq-outbound-queue\": \"test-ci\",
+            \"rabbitmq-exchange\": \"ams-fanout\",
+            \"rabbitmq-routing-key\": \"training\"
+          }""" > $GITHUB_WORKSPACE/rmq.json
 
-          ctest --output-on-failure -R AMSEndToEndFromJSON::NoModel::Double::DB::rmq::HOST
+          env | grep RABBIT
+          python3 $GITHUB_WORKSPACE/tools/rmq/recv_binary.py -c $GITHUB_WORKSPACE/rmq.json -q test3 
+          
+          AMS_OBJECTS=$GITHUB_WORKSPACE/tests/AMSlib/rmq.json $GITHUB_WORKSPACE/tests/AMSlib/ams_rmq 0 8 9 "double" 2 1024
+
+          #ctest --output-on-failure -R AMSEndToEndFromJSON::NoModel::Double::DB::rmq::HOST
         env:
           RABBITMQ_USER: guest
           RABBITMQ_PASS: guest
