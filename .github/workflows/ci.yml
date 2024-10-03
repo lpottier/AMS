@@ -411,7 +411,7 @@ jobs:
         RABBITMQ_PORT: 5672
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build Torch=On FAISS=On RMQ=On AMS
         shell: bash -l {0}
         run: |
@@ -502,7 +502,9 @@ jobs:
           RABBITMQ_HOST: rabbitmq
           RABBITMQ_PORT: 5672
       - name: Persist logs
-        if: ${{ failure() }}
+        # if: ${{ failure() }}
         run: |
+            pwd
+            ls $GITHUB_WORKSPACE/
             cat $GITHUB_WORKSPACE/output.txt
         shell: bash
