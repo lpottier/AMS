@@ -493,7 +493,7 @@ jobs:
 
           # python3 $GITHUB_WORKSPACE/tools/rmq/send_ams.py -c $GITHUB_WORKSPACE/rmq.json -r test3 -n 10
 
-          AMS_LOG_LEVEL=debug AMS_OBJECTS=$GITHUB_WORKSPACE/build/tests/AMSlib/rmq.json $GITHUB_WORKSPACE/build/tests/AMSlib/ams_rmq 0 8 9 "double" 2 1024 2 | tee $GITHUB_WORKSPACE/output.txt 2>&1
+          AMS_LOG_LEVEL=debug AMS_OBJECTS=$GITHUB_WORKSPACE/build/tests/AMSlib/rmq.json $GITHUB_WORKSPACE/build/tests/AMSlib/ams_rmq 0 8 9 "double" 2 1024 2 > $GITHUB_WORKSPACE/output.txt 2>&1
 
           #ctest --output-on-failure -R AMSEndToEndFromJSON::NoModel::Double::DB::rmq::HOST
         env:
@@ -505,6 +505,6 @@ jobs:
         # if: ${{ failure() }}
         run: |
             pwd
-            ls $GITHUB_WORKSPACE/
+            ls -alh $GITHUB_WORKSPACE/output.txt
             cat $GITHUB_WORKSPACE/output.txt
         shell: bash
