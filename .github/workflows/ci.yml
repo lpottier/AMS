@@ -416,6 +416,7 @@ jobs:
         shell: bash -l {0}
         run: |
           module load gcc/11.2.1
+          export SPACK_ROOT=/spack/
           source /spack/share/spack/setup-env.sh
           spack env activate -p /ams-spack-env
           rm -rf build/
@@ -452,67 +453,65 @@ jobs:
             -Damqpcpp_DIR=$AMS_AMQPCPP_PATH \
             $GITHUB_WORKSPACE
             make
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-        with:
-          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
-          limit-access-to-actor: true
+      - name: Run tests Torch=On FAISS=On RMQ=On AMSlib RabbitMQ egress
+        run: |
+          cd build
+          export SPACK_ROOT=/spack/
+          source /spack/share/spack/setup-env.sh
+          spack env activate -p /ams-spack-env
+
+          # We overwrite the rmq.json created by CMake
+          echo """{
+            \"db\": {
+              \"dbType\": \"rmq\",
+              \"rmq_config\": {
+                \"rabbitmq-name\": \"rabbit\",
+                \"rabbitmq-user\": \"${RABBITMQ_USER}\",
+                \"rabbitmq-password\": \"${RABBITMQ_PASS}\",
+                \"service-port\": ${RABBITMQ_PORT},
+                \"service-host\": \"${RABBITMQ_HOST}\",
+                \"rabbitmq-vhost\": \"/\",
+                \"rabbitmq-outbound-queue\": \"test-ci\",
+                \"rabbitmq-exchange\": \"ams-fanout\",
+                \"rabbitmq-routing-key\": \"training\"
+              },
+              \"update_surrogate\": false
+            },
+            \"ml_models\": {},
+            \"domain_models\": {}
+          }""" > $GITHUB_WORKSPACE/build/tests/AMSlib/rmq.json
+
+          # echo """{
+          #   \"rabbitmq-name\": \"rabbit\",
+          #   \"rabbitmq-user\": \"${RABBITMQ_USER}\",
+          #   \"rabbitmq-password\": \"${RABBITMQ_PASS}\",
+          #   \"service-port\": ${RABBITMQ_PORT},
+          #   \"service-host\": \"${RABBITMQ_HOST}\",
+          #   \"rabbitmq-vhost\": \"/\",
+          #   \"rabbitmq-outbound-queue\": \"test-ci\",
+          #   \"rabbitmq-exchange\": \"ams-fanout\",
+          #   \"rabbitmq-routing-key\": \"training\"
+          # }""" > $GITHUB_WORKSPACE/rmq.json
+
+          # python3 $GITHUB_WORKSPACE/tools/rmq/send_ams.py -c $GITHUB_WORKSPACE/rmq.json -r test3 -n 10
+          #  #> $GITHUB_WORKSPACE/output.txt 2>&1 || $GITHUB_WORKSPACE/output.txt
+          AMS_LOG_LEVEL=debug AMS_OBJECTS=$GITHUB_WORKSPACE/build/tests/AMSlib/rmq.json $GITHUB_WORKSPACE/build/tests/AMSlib/ams_rmq 0 8 9 "double" 2 1024 2
+
+          #ctest --output-on-failure -R AMSEndToEndFromJSON::NoModel::Double::DB::rmq::HOST
         env:
           RABBITMQ_USER: guest
           RABBITMQ_PASS: guest
           RABBITMQ_HOST: rabbitmq
           RABBITMQ_PORT: 5672
-      # - name: Run tests Torch=On FAISS=On RMQ=On AMSlib RabbitMQ egress
-      #   run: |
-      #     cd build
-      #     source /spack/share/spack/setup-env.sh
-      #     spack env activate -p /ams-spack-env
-
-      #     # We overwrite the rmq.json created by CMake
-      #     echo """{
-      #       \"db\": {
-      #         \"dbType\": \"rmq\",
-      #         \"rmq_config\": {
-      #           \"rabbitmq-name\": \"rabbit\",
-      #           \"rabbitmq-user\": \"${RABBITMQ_USER}\",
-      #           \"rabbitmq-password\": \"${RABBITMQ_PASS}\",
-      #           \"service-port\": ${RABBITMQ_PORT},
-      #           \"service-host\": \"${RABBITMQ_HOST}\",
-      #           \"rabbitmq-vhost\": \"/\",
-      #           \"rabbitmq-outbound-queue\": \"test-ci\",
-      #           \"rabbitmq-exchange\": \"ams-fanout\",
-      #           \"rabbitmq-routing-key\": \"training\"
-      #         },
-      #         \"update_surrogate\": false
-      #       },
-      #       \"ml_models\": {},
-      #       \"domain_models\": {}
-      #     }""" > $GITHUB_WORKSPACE/build/tests/AMSlib/rmq.json
-
-      #     # echo """{
-      #     #   \"rabbitmq-name\": \"rabbit\",
-      #     #   \"rabbitmq-user\": \"${RABBITMQ_USER}\",
-      #     #   \"rabbitmq-password\": \"${RABBITMQ_PASS}\",
-      #     #   \"service-port\": ${RABBITMQ_PORT},
-      #     #   \"service-host\": \"${RABBITMQ_HOST}\",
-      #     #   \"rabbitmq-vhost\": \"/\",
-      #     #   \"rabbitmq-outbound-queue\": \"test-ci\",
-      #     #   \"rabbitmq-exchange\": \"ams-fanout\",
-      #     #   \"rabbitmq-routing-key\": \"training\"
-      #     # }""" > $GITHUB_WORKSPACE/rmq.json
-
-      #     # python3 $GITHUB_WORKSPACE/tools/rmq/send_ams.py -c $GITHUB_WORKSPACE/rmq.json -r test3 -n 10
-      #     #  #> $GITHUB_WORKSPACE/output.txt 2>&1 || $GITHUB_WORKSPACE/output.txt
-      #     AMS_LOG_LEVEL=debug AMS_OBJECTS=$GITHUB_WORKSPACE/build/tests/AMSlib/rmq.json $GITHUB_WORKSPACE/build/tests/AMSlib/ams_rmq 0 8 9 "double" 2 1024 2
-
-      #     #ctest --output-on-failure -R AMSEndToEndFromJSON::NoModel::Double::DB::rmq::HOST
-      #   env:
-      #     RABBITMQ_USER: guest
-      #     RABBITMQ_PASS: guest
-      #     RABBITMQ_HOST: rabbitmq
-      #     RABBITMQ_PORT: 5672
-      # - name: Persist logs
-      #   run: |
-      #       pwd
-      #       ls -alh $GITHUB_WORKSPACE/output.txt
-      #       cat $GITHUB_WORKSPACE/output.txt
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3.19
+        with:
+          limit-access-to-actor: true
+          sudo: false
+          # timeout-minutes: 15
+        env:
+          RABBITMQ_USER: guest
+          RABBITMQ_PASS: guest
+          RABBITMQ_HOST: rabbitmq
+          RABBITMQ_PORT: 5672
