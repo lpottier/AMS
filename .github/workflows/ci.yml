@@ -6,6 +6,11 @@ on:
     branches: [ "develop" ]
   workflow_dispatch:
 
+
+env:
+  ACTIONS_RUNNER_DEBUG: true
+
+
 jobs:
   # build-run-tests:
   #   # The type of runner that the job will run on
