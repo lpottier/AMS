@@ -7,10 +7,6 @@ on:
   workflow_dispatch:
 
 
-env:
-  ACTIONS_RUNNER_DEBUG: true
-
-
 jobs:
   # build-run-tests:
   #   # The type of runner that the job will run on
@@ -510,7 +506,7 @@ jobs:
           RABBITMQ_PORT: 5672
       - name: Setup tmate session
         if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3.19
+        uses: lpottier/action-tmate@master
         with:
           limit-access-to-actor: true
           sudo: false
